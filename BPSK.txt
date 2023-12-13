@@ -1,0 +1,38 @@
+% message
+msg = 'Yo man';
+
+% convert to binary
+asci_vals = double(msg);
+binary_vals = dec2bin(asci_vals,8);
+binary_msg = reshape(transpose(binary_vals),1,[]);
+
+% bpsk modulation
+binary_mod = double(binary_msg) - 48;
+bpsk_mod_1 = binary_mod*2 - 1;
+bpsk_mod_2 = bpsk_mod_1*-1;
+bpsk_mod = reshape(transpose(bpsk_mod_2),1,[]);
+
+% adding noise
+n = randn(1,length(binary_mod));
+snr_db = 10;
+snr = power(10,(snr_db/10));
+noise = n/sqrt(snr);
+received = bpsk_mod + noise;
+
+% demodulation
+for i = 1:length(received)
+    if received(i)<0
+        received(i)=1;
+    else
+        received(i)=0;
+    end
+end
+
+% convert from binary to message
+received_string= num2str(received);
+a = reshape(transpose(received_string),1,[]);
+b = strrep(a,' ','');
+received_msg = char(bin2dec(reshape(b, 8, [])').');
+
+% hogyaa saara
+disp(received_msg);
